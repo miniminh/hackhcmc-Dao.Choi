@@ -1,18 +1,12 @@
 from ultralytics import YOLO
 from PIL import Image
+from utils import plot_results, model
 
-MODEL_PATH = 'weights/yolov9c.pt'
-model = YOLO(MODEL_PATH)
-    
 def run_batch(images):
-    results = model(images)  # return a list of Results objects
-
-    # Process results list
-    for i, result in enumerate(results):
-        boxes = result.boxes  # Boxes object for bounding box outputs
-        masks = result.masks  # Masks object for segmentation masks outputs
-        keypoints = result.keypoints  # Keypoints object for pose outputs
-        probs = result.probs  # Probs object for classification outputs
-        obb = result.obb  # Oriented boxes object for OBB outputs
-        result.save(filename=f'result/image_{i}.jpg')  # save to disk
+    results = model(images, iou=0.5)  # return a list of Results objects
     return results
+
+def display(images, results, TARGET_CLASS):
+    for i, result in enumerate(results):
+        images[i].save('temp.png')
+        plot_results('temp.png', result, TARGET_CLASS, f'result/image_{i}.jpg')
